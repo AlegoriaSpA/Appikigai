@@ -1,6 +1,7 @@
 <script setup>
 import { useAuthStore } from '@/stores/auth'
 import loginImage from '@images/logo.webp'
+import muralImage from '@/assets/images/Mural Ikigai.webp'
 
 definePage({
   meta: {
@@ -43,42 +44,26 @@ const handleLogin = async () => {
 <template>
   <VRow
     no-gutters
-    class="auth-wrapper bg-surface"
+    class="auth-wrapper"
+    :style="{
+      backgroundImage: `url(${muralImage})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      minHeight: '100vh'
+    }"
   >
     <VCol
-      md="8"
-      class="d-none d-md-flex"
-    >
-      <div 
-        class="position-relative w-100 me-0 d-flex align-center justify-center"
-        style="background-color: #FFFFFF;"
-      >
-        <VImg
-          max-width="400"
-          :src="loginImage"
-          class="auth-illustration"
-        />
-        <div style="position: absolute; bottom: 20px; text-align: center; width: 100%;">
-          <p style="font-size: 16px; color: #6B7280; margin: 0;">
-            Powered by <a href="https://www.alegoria.cl" target="_blank" style="color: #F97316; text-decoration: none; font-weight: 600;">Alegoria</a>
-          </p>
-        </div>
-      </div>
-    </VCol>
-
-    <VCol
       cols="12"
-      md="4"
-      class="auth-card-v2 d-flex align-center justify-center"
-      style="background-color: #F9FAFB;"
+      class="d-flex align-center justify-center"
     >
       <VCard
         flat
         :max-width="500"
         class="mt-12 mt-sm-0 pa-6"
       >
-        <!-- Logo para móvil -->
-        <VCardText class="d-flex d-md-none justify-center mb-4">
+        <!-- Logo -->
+        <VCardText class="d-flex justify-center mb-4">
           <VImg
             :src="loginImage"
             max-width="300"
@@ -183,6 +168,13 @@ const handleLogin = async () => {
               </VCol>
             </VRow>
           </VForm>
+        </VCardText>
+
+        <!-- Footer -->
+        <VCardText class="text-center">
+          <p style="font-size: 14px; color: #6B7280; margin: 0;">
+            Powered by <a href="https://www.alegoria.cl" target="_blank" style="color: #F97316; text-decoration: none; font-weight: 600;">Alegoria</a>
+          </p>
         </VCardText>
       </VCard>
     </VCol>

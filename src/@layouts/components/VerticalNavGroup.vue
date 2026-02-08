@@ -127,6 +127,7 @@ watch(configStore.isVerticalNavMini(isVerticalNavHovered), val => {
         open: isGroupOpen,
         disabled: item.disable,
       },
+      item.class,
     ]"
   >
     <div
@@ -202,6 +203,29 @@ watch(configStore.isVerticalNavMini(isVerticalNavHovered), val => {
       display: flex;
       align-items: center;
       cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    
+    // Estilo para el menú Pagos
+    &.nav-item-pagos .nav-group-label {
+      background-color: #DC2626;
+      border-radius: 6px;
+      padding: 8px 12px;
+      
+      .nav-item-icon,
+      .nav-item-title,
+      .nav-group-arrow {
+        color: white;
+      }
+      
+      &:hover {
+        background-color: #B91C1C;
+      }
+    }
+    
+    &.nav-item-pagos.active .nav-group-label,
+    &.nav-item-pagos.open .nav-group-label {
+      background-color: #991B1B;
     }
   }
 }
