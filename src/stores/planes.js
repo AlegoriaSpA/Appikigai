@@ -4,7 +4,50 @@ import { $api } from '@/utils/api'
 // Función para obtener datos del localStorage
 function getLocalPlanes() {
   const stored = localStorage.getItem('planes_ikigai')
-  return stored ? JSON.parse(stored) : []
+  if (stored) {
+    return JSON.parse(stored)
+  }
+  
+  // Planes por defecto si no existen
+  const planesDefault = [
+    {
+      id: 1,
+      nombre: '8 Clases',
+      descripcion: 'Plan de 8 clases mensuales',
+      precio: 45000,
+      clases_totales: 8,
+      duracion_dias: 30,
+      activo: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+    {
+      id: 2,
+      nombre: '16 Clases',
+      descripcion: 'Plan de 16 clases mensuales',
+      precio: 55000,
+      clases_totales: 16,
+      duracion_dias: 30,
+      activo: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+    {
+      id: 3,
+      nombre: 'Open Box 20 Clases',
+      descripcion: 'Plan Open Box con 20 clases mensuales',
+      precio: 60000,
+      clases_totales: 20,
+      duracion_dias: 30,
+      activo: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+  ]
+  
+  // Guardar planes default en localStorage
+  saveLocalPlanes(planesDefault)
+  return planesDefault
 }
 
 // Función para guardar en localStorage

@@ -72,15 +72,21 @@ async function loadData() {
       planActivo.value = JSON.parse(planActivoStr)
     }
     
-    // Establecer fecha de inicio por defecto
+    // Establecer fecha de inicio por defecto al día siguiente
+    const manana = new Date()
+    manana.setDate(manana.getDate() + 1)
+    
     if (planActivo.value && planActivo.value.fecha_expiracion) {
       // Si hay plan activo, establecer fecha de inicio al día siguiente de la expiración
       const fechaExpiracion = new Date(planActivo.value.fecha_expiracion)
       fechaExpiracion.setDate(fechaExpiracion.getDate() + 1)
-      fechaInicio.value = fechaExpiracion.toISOString().split('T')[0]
+      // Usar la fecha mayor entre mañana y el día después de la expiración
+      fechaInicio.value = fechaExpiracion > manana 
+        ? fechaExpiracion.toISOString().split('T')[0]
+        : manana.toISOString().split('T')[0]
     } else {
-      // Si no hay plan activo, puede iniciar desde hoy
-      fechaInicio.value = new Date().toISOString().split('T')[0]
+      // Si no hay plan activo, iniciar mañana
+      fechaInicio.value = manana.toISOString().split('T')[0]
     }
     
     // Calcular fecha fin basado en la duración del plan

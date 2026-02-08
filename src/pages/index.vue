@@ -3,6 +3,8 @@ import { useAuthStore } from '@/stores/auth'
 import { useMensajesStore } from '@/stores/mensajes'
 import { usePlanesStore } from '@/stores/planes'
 import { useUsersStore } from '@/stores/users'
+import { useReservasStore } from '@/stores/reservas'
+import { useClasesStore } from '@/stores/clases'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -17,6 +19,8 @@ const authStore = useAuthStore()
 const mensajesStore = useMensajesStore()
 const planesStore = usePlanesStore()
 const usersStore = useUsersStore()
+const reservasStore = useReservasStore()
+const clasesStore = useClasesStore()
 const router = useRouter()
 
 const currentUser = computed(() => authStore.currentUser)
@@ -36,10 +40,14 @@ const usuarios = ref([])
 // Plan actual del usuario
 const miPlan = ref(null)
 
+// Próximas reservas
+const proximasReservas = ref([])
+
 // Cargar datos
 onMounted(async () => {
   await cargarEstadisticas()
   await cargarPlanActual()
+  await cargarProximasReservas()
 })
 
 const cargarPlanActual = async () => {
@@ -51,6 +59,16 @@ const cargarPlanActual = async () => {
     }
   } catch (error) {
     console.error('Error al cargar plan:', error)
+  }
+}
+
+const cargarProximasReservas = async () => {
+  try {
+    if (currentUser.value) {
+      proximasReservas.value = reservasStore.obtenerProximasReservas(currentUser.value.id)
+    }
+  } catch (error) {
+    console.error('Error al cargar reservas:', error)
   }
 }
 
@@ -398,7 +416,7 @@ const abrirCongreso = () => {
               size="large"
               prepend-icon="tabler-calendar-event"
               class="me-2"
-              @click="navegarA('/reservas')"
+              @click="navegarA('/clases')"
             >
               Reservar Clase
             </VBtn>
@@ -410,6 +428,137 @@ const abrirCongreso = () => {
               @click="navegarA('/mi-plan')"
             >
               Ver Mi Plan
+            </VBtn>
+          </VCol>
+        </VRow>
+      </VCardText>
+    </VCard>
+
+    <!-- Próximas Reservas -->
+    <VCard
+      v-if="proximasReservas.length > 0"
+      class="mb-6"
+    >
+      <VCardText>
+        <div class="d-flex align-center mb-4">
+          <VAvatar
+            size="56"
+            color="success"
+            variant="tonal"
+            class="me-4"
+          >
+            <VIcon
+              icon="tabler-calendar-check"
+              size="32"
+            />
+          </VAvatar>
+          <div>
+            <h3
+              class="text-h5 mb-1"
+              style="color: #DC2626;"
+            >
+              Mis Próximas Clases
+            </h3>
+            <p class="text-body-2 mb-0 text-medium-emphasis">
+              Tienes {{ proximasReservas.length }} {{ proximasReservas.length === 1 ? 'clase reservada' : 'clases reservadas' }}
+            </p>
+          </div>
+        </div>
+
+        <VRow>
+          <VCol
+            v-for="reserva in proximasReservas.slice(0, 3)"
+            :key="reserva.id"
+            cols="12"
+            md="4"
+          >
+            <VCard
+              border
+              class="h-100"
+            >
+              <VCardText>
+                <div class="d-flex justify-space-between align-center mb-3">
+                  <VChip
+                    color="success"
+                    size="small"
+                    variant="tonal"
+                  >
+                    Confirmada
+                  </VChip>
+                  <VIcon
+                    icon="tabler-circle-check"
+                    color="success"
+                  />
+                </div>
+
+                <h4 class="text-h6 mb-2">
+                  {{ reserva.claseNombre }}
+                </h4>
+
+                <div class="d-flex flex-column gap-2">
+                  <div class="d-flex align-center gap-2">
+                    <VIcon
+                      icon="tabler-calendar"
+                      size="18"
+                      color="grey"
+                    />
+                    <span class="text-body-2">
+                      {{ new Date(reserva.fecha).toLocaleDateString('es-CL', { 
+                        weekday: 'long', 
+                        day: 'numeric', 
+                        month: 'long' 
+                      }) }}
+                    </span>
+                  </div>
+
+                  <div class="d-flex align-center gap-2">
+                    <VIcon
+                      icon="tabler-clock"
+                      size="18"
+                      color="grey"
+                    />
+                    <span class="text-body-2">
+                      {{ reserva.horaInicio }} ({{ reserva.duracion }} min)
+                    </span>
+                  </div>
+
+                  <div class="d-flex align-center gap-2">
+                    <VIcon
+                      icon="tabler-user"
+                      size="18"
+                      color="grey"
+                    />
+                    <span class="text-body-2">
+                      Coach: {{ reserva.coach }}
+                    </span>
+                  </div>
+                </div>
+              </VCardText>
+
+              <VCardActions>
+                <VBtn
+                  variant="text"
+                  color="primary"
+                  size="small"
+                  block
+                  @click="navegarA('/clases')"
+                >
+                  Ver todas mis clases
+                </VBtn>
+              </VCardActions>
+            </VCard>
+          </VCol>
+        </VRow>
+
+        <VRow v-if="proximasReservas.length > 3" class="mt-2">
+          <VCol cols="12" class="text-center">
+            <VBtn
+              variant="outlined"
+              color="primary"
+              prepend-icon="tabler-calendar"
+              @click="navegarA('/clases')"
+            >
+              Ver todas ({{ proximasReservas.length }})
             </VBtn>
           </VCol>
         </VRow>

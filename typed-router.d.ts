@@ -20,6 +20,11 @@ declare module 'vue-router/auto-routes' {
   export interface RouteNamedMap {
     'root': RouteRecordInfo<'root', '/', Record<never, never>, Record<never, never>>,
     '$error': RouteRecordInfo<'$error', '/:error(.*)', { error: ParamValue<true> }, { error: ParamValue<false> }>,
+    'administrar-clases': RouteRecordInfo<'administrar-clases', '/administrar-clases', Record<never, never>, Record<never, never>>,
+    'administrar-clases-prueba': RouteRecordInfo<'administrar-clases-prueba', '/administrar-clases-prueba', Record<never, never>, Record<never, never>>,
+    'check-in-clases': RouteRecordInfo<'check-in-clases', '/check-in-clases', Record<never, never>, Record<never, never>>,
+    'clase-prueba': RouteRecordInfo<'clase-prueba', '/clase-prueba', Record<never, never>, Record<never, never>>,
+    'clases': RouteRecordInfo<'clases', '/clases', Record<never, never>, Record<never, never>>,
     'evaluaciones': RouteRecordInfo<'evaluaciones', '/evaluaciones', Record<never, never>, Record<never, never>>,
     'forgot-password': RouteRecordInfo<'forgot-password', '/forgot-password', Record<never, never>, Record<never, never>>,
     'informes': RouteRecordInfo<'informes', '/informes', Record<never, never>, Record<never, never>>,
@@ -27,9 +32,11 @@ declare module 'vue-router/auto-routes' {
     'mi-plan': RouteRecordInfo<'mi-plan', '/mi-plan', Record<never, never>, Record<never, never>>,
     'pagar': RouteRecordInfo<'pagar', '/pagar', Record<never, never>, Record<never, never>>,
     'planes': RouteRecordInfo<'planes', '/planes', Record<never, never>, Record<never, never>>,
+    'planes-disponibles': RouteRecordInfo<'planes-disponibles', '/planes-disponibles', Record<never, never>, Record<never, never>>,
     'profile': RouteRecordInfo<'profile', '/profile', Record<never, never>, Record<never, never>>,
     'register': RouteRecordInfo<'register', '/register', Record<never, never>, Record<never, never>>,
     'reset-password': RouteRecordInfo<'reset-password', '/reset-password', Record<never, never>, Record<never, never>>,
+    'todos-los-pagos': RouteRecordInfo<'todos-los-pagos', '/todos-los-pagos', Record<never, never>, Record<never, never>>,
     'users': RouteRecordInfo<'users', '/users', Record<never, never>, Record<never, never>>,
     'validar-pagos': RouteRecordInfo<'validar-pagos', '/validar-pagos', Record<never, never>, Record<never, never>>,
   }
