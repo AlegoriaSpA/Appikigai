@@ -188,7 +188,7 @@ loadUserData()
               <div>
                 <h2
                   class="text-h5 mb-1"
-                  style="color: #7C3AED;"
+                  style="color: #DC2626;"
                 >
                   {{ user?.name || 'Usuario' }}
                 </h2>
@@ -207,7 +207,7 @@ loadUserData()
       <VCol cols="12">
         <VCard>
           <VCardTitle class="d-flex align-center justify-space-between">
-            <span style="color: #7C3AED;">Información Personal</span>
+            <span style="color: #DC2626;">Información Personal</span>
             <VBtn
               v-if="!isEditing"
               variant="tonal"
@@ -386,7 +386,7 @@ loadUserData()
                   <div class="mb-4">
                     <div
                       class="text-body-2 mb-1"
-                      style="color: #7C3AED; font-weight: 500;"
+                      style="color: #DC2626; font-weight: 500;"
                     >
                       Nombre
                     </div>
@@ -403,7 +403,7 @@ loadUserData()
                   <div class="mb-4">
                     <div
                       class="text-body-2 mb-1"
-                      style="color: #7C3AED; font-weight: 500;"
+                      style="color: #DC2626; font-weight: 500;"
                     >
                       Apellidos
                     </div>
@@ -420,7 +420,7 @@ loadUserData()
                   <div class="mb-4">
                     <div
                       class="text-body-2 mb-1"
-                      style="color: #7C3AED; font-weight: 500;"
+                      style="color: #DC2626; font-weight: 500;"
                     >
                       RUT
                     </div>
@@ -437,7 +437,7 @@ loadUserData()
                   <div class="mb-4">
                     <div
                       class="text-body-2 mb-1"
-                      style="color: #7C3AED; font-weight: 500;"
+                      style="color: #DC2626; font-weight: 500;"
                     >
                       Teléfono
                     </div>
@@ -454,7 +454,7 @@ loadUserData()
                   <div class="mb-4">
                     <div
                       class="text-body-2 mb-1"
-                      style="color: #7C3AED; font-weight: 500;"
+                      style="color: #DC2626; font-weight: 500;"
                     >
                       Correo Electrónico
                     </div>
@@ -472,7 +472,7 @@ loadUserData()
                   <div class="mb-4">
                     <div
                       class="text-body-2 mb-1"
-                      style="color: #7C3AED; font-weight: 500;"
+                      style="color: #DC2626; font-weight: 500;"
                     >
                       Fecha de Nacimiento
                     </div>

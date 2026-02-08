@@ -1,7 +1,8 @@
 <script setup>
 import { useAuthStore } from '@/stores/auth'
-import { useEvaluacionesStore } from '@/stores/evaluaciones'
 import { useMensajesStore } from '@/stores/mensajes'
+import { usePlanesStore } from '@/stores/planes'
+import { useUsersStore } from '@/stores/users'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -14,7 +15,8 @@ definePage({
 
 const authStore = useAuthStore()
 const mensajesStore = useMensajesStore()
-const evaluacionesStore = useEvaluacionesStore()
+const planesStore = usePlanesStore()
+const usersStore = useUsersStore()
 const router = useRouter()
 
 const currentUser = computed(() => authStore.currentUser)
@@ -26,13 +28,55 @@ const estadisticas = ref({
     total: 0,
     noLeidos: 0,
   },
-  evaluaciones: {
-    total: 0,
-  },
 })
 
-// Evaluaciones
-const evaluaciones = ref([])
+// Usuarios recientes
+const usuarios = ref([])
+
+// Plan actual del usuario
+const miPlan = ref(null)
+
+// Cargar datos
+onMounted(async () => {
+  await cargarEstadisticas()
+  await cargarPlanActual()
+})
+
+const cargarPlanActual = async () => {
+  try {
+    // Cargar desde localStorage
+    const planStr = localStorage.getItem('user_plan_ikigai')
+    if (planStr) {
+      miPlan.value = JSON.parse(planStr)
+    }
+  } catch (error) {
+    console.error('Error al cargar plan:', error)
+  }
+}
+
+const getDiasRestantes = () => {
+  if (!miPlan.value?.fecha_expiracion) return 0
+  const ahora = new Date()
+  const vencimiento = new Date(miPlan.value.fecha_expiracion)
+  const diferencia = vencimiento - ahora
+  return Math.max(0, Math.ceil(diferencia / (1000 * 60 * 60 * 24)))
+}
+
+const getClasesUsadas = () => {
+  if (!miPlan.value) return 0
+  const total = miPlan.value.clases_totales || 0
+  const disponibles = miPlan.value.clases_disponibles || 0
+  return total - disponibles
+}
+
+const formatearFecha = fecha => {
+  if (!fecha) return 'Sin fecha'
+  return new Date(fecha).toLocaleDateString('es-CL', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  })
+}
 
 // Cargar datos
 onMounted(async () => {
@@ -46,22 +90,19 @@ const cargarEstadisticas = async () => {
     estadisticas.value.mensajes.total = mensajesStore.mensajes.length
     estadisticas.value.mensajes.noLeidos = mensajesStore.mensajes.filter(m => !m.leido).length
     
-    // Cargar evaluaciones
-    const result = await evaluacionesStore.fetchEvaluaciones({ limit: 10 })
-    if (result.success) {
-      evaluaciones.value = evaluacionesStore.evaluaciones
-      estadisticas.value.evaluaciones.total = evaluaciones.value.length
-    }
+    // Cargar usuarios
+    await usersStore.fetchUsers()
+    usuarios.value = usersStore.users
   } catch (error) {
     console.error('Error al cargar estadísticas:', error)
   }
 }
 
-// Obtener evaluaciones recientes (últimas 5)
-const evaluacionesRecientes = computed(() => {
-  return [...evaluaciones.value]
-    .sort((a, b) => new Date(b.fecha_evaluacion) - new Date(a.fecha_evaluacion))
-    .slice(0, 5)
+// Obtener usuarios recientes (últimos 10)
+const usuariosRecientes = computed(() => {
+  return [...usuarios.value]
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .slice(0, 10)
 })
 
 // Obtener mensajes recientes
@@ -79,15 +120,6 @@ const getEstadoColor = estado => {
     'en revisión': 'info',
   }
   return colores[estado] || 'default'
-}
-
-const formatearFecha = fecha => {
-  if (!fecha) return 'Sin fecha'
-  return new Date(fecha).toLocaleDateString('es-ES', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  })
 }
 
 const navegarA = ruta => {
@@ -121,7 +153,7 @@ const abrirCongreso = () => {
               <div>
                 <h3
                   class="text-h4 mb-1"
-                  style="color: #FFFFFF;"
+                  style="color: #DC2626;"
                 >
                   ¡Bienvenido, {{ currentUser?.name || 'Usuario' }}! 👋
                 </h3>
@@ -138,135 +170,322 @@ const abrirCongreso = () => {
           >
             <VBtn
               color="primary"
+              size="large"
               prepend-icon="tabler-plus"
-              class="me-2"
               @click="navegarA('/users')"
             >
               Nuevo Usuario
-            </VBtn>
-            <VBtn
-              color="primary"
-              prepend-icon="tabler-plus"
-              @click="navegarA('/evaluaciones')"
-            >
-              Nueva Evaluación
             </VBtn>
           </VCol>
         </VRow>
       </VCardText>
     </VCard>
 
-    <!-- Estadísticas principales -->
-    <VRow>
-      <!-- Card Resúmenes -->
-      <VCol
-        cols="12"
-        sm="6"
-        md="3"
-      >
-        <VCard class="h-100">
-          <VCardText>
+    <!-- Mi Plan Actual -->
+    <VCard
+      v-if="miPlan"
+      class="mb-6"
+    >
+      <VCardText>
+        <VRow>
+          <VCol cols="12">
             <div class="d-flex align-center mb-4">
               <VAvatar
-                size="44"
+                size="56"
                 color="primary"
                 variant="tonal"
+                class="me-4"
               >
                 <VIcon
-                  icon="tabler-file-text"
-                  size="24"
+                  icon="tabler-package"
+                  size="32"
                 />
               </VAvatar>
-              <div class="ms-3">
-                <p class="text-body-2 mb-0 text-medium-emphasis">
-                  Total de Evaluaciones
-                </p>
-                <h3 class="text-h3">
-                  {{ estadisticas.evaluaciones.total }}
+              <div>
+                <h3
+                  class="text-h5 mb-1"
+                  style="color: #DC2626;"
+                >
+                  Mi Plan Actual
                 </h3>
+                <p class="text-h6 mb-0">
+                  {{ miPlan.plan?.nombre || 'Plan Activo' }}
+                </p>
               </div>
             </div>
-            <VBtn
-              variant="text"
-              size="small"
+          </VCol>
+        </VRow>
+
+        <VRow>
+          <!-- Clases Disponibles -->
+          <VCol
+            cols="12"
+            sm="6"
+            md="3"
+          >
+            <VCard
+              variant="tonal"
+              color="success"
+            >
+              <VCardText class="text-center">
+                <VIcon
+                  icon="tabler-circle-check"
+                  size="40"
+                  color="success"
+                  class="mb-2"
+                />
+                <div class="text-h4 font-weight-bold">
+                  {{ miPlan.clases_disponibles || 0 }}
+                </div>
+                <div class="text-body-2 text-medium-emphasis">
+                  Clases Disponibles
+                </div>
+              </VCardText>
+            </VCard>
+          </VCol>
+
+          <!-- Clases Usadas -->
+          <VCol
+            cols="12"
+            sm="6"
+            md="3"
+          >
+            <VCard
+              variant="tonal"
               color="primary"
-              @click="navegarA('/evaluaciones')"
             >
-              VER TODOS
-              <VIcon
-                end
-                icon="tabler-arrow-right"
-                size="16"
-              />
-            </VBtn>
-          </VCardText>
-        </VCard>
-      </VCol>
+              <VCardText class="text-center">
+                <VIcon
+                  icon="tabler-fitness"
+                  size="40"
+                  color="primary"
+                  class="mb-2"
+                />
+                <div class="text-h4 font-weight-bold">
+                  {{ getClasesUsadas() }}
+                </div>
+                <div class="text-body-2 text-medium-emphasis">
+                  Clases Usadas
+                </div>
+              </VCardText>
+            </VCard>
+          </VCol>
 
-      <!-- Card Mensajes -->
-      <!-- <VCol
-        cols="12"
-        sm="6"
-        md="3"
-      >
-        <VCard class="h-100">
-          <VCardText>
-            <div class="d-flex align-center mb-4">
+          <!-- Total de Clases -->
+          <VCol
+            cols="12"
+            sm="6"
+            md="3"
+          >
+            <VCard
+              variant="tonal"
+              color="info"
+            >
+              <VCardText class="text-center">
+                <VIcon
+                  icon="tabler-ticket"
+                  size="40"
+                  color="info"
+                  class="mb-2"
+                />
+                <div class="text-h4 font-weight-bold">
+                  {{ miPlan.plan?.clases_totales >= 999 ? '∞' : miPlan.clases_totales }}
+                </div>
+                <div class="text-body-2 text-medium-emphasis">
+                  Total de Clases
+                </div>
+              </VCardText>
+            </VCard>
+          </VCol>
+
+          <!-- Días Restantes -->
+          <VCol
+            cols="12"
+            sm="6"
+            md="3"
+          >
+            <VCard
+              variant="tonal"
+              color="warning"
+            >
+              <VCardText class="text-center">
+                <VIcon
+                  icon="tabler-calendar-time"
+                  size="40"
+                  color="warning"
+                  class="mb-2"
+                />
+                <div class="text-h4 font-weight-bold">
+                  {{ getDiasRestantes() }}
+                </div>
+                <div class="text-body-2 text-medium-emphasis">
+                  Días Restantes
+                </div>
+              </VCardText>
+            </VCard>
+          </VCol>
+        </VRow>
+
+        <!-- Fechas del Plan -->
+        <VRow class="mt-4">
+          <VCol
+            cols="12"
+            md="6"
+          >
+            <VCard
+              variant="outlined"
+              class="h-100"
+            >
+              <VCardText>
+                <div class="d-flex align-center mb-2">
+                  <VIcon
+                    icon="tabler-calendar-event"
+                    size="24"
+                    color="success"
+                    class="me-2"
+                  />
+                  <div>
+                    <div class="text-caption text-medium-emphasis">
+                      Fecha de Inicio
+                    </div>
+                    <div class="text-h6">
+                      {{ formatearFecha(miPlan.fecha_inicio) }}
+                    </div>
+                  </div>
+                </div>
+              </VCardText>
+            </VCard>
+          </VCol>
+
+          <VCol
+            cols="12"
+            md="6"
+          >
+            <VCard
+              variant="outlined"
+              class="h-100"
+            >
+              <VCardText>
+                <div class="d-flex align-center mb-2">
+                  <VIcon
+                    icon="tabler-calendar-x"
+                    size="24"
+                    color="error"
+                    class="me-2"
+                  />
+                  <div>
+                    <div class="text-caption text-medium-emphasis">
+                      Fecha de Vencimiento
+                    </div>
+                    <div class="text-h6">
+                      {{ formatearFecha(miPlan.fecha_expiracion) }}
+                    </div>
+                  </div>
+                </div>
+              </VCardText>
+            </VCard>
+          </VCol>
+        </VRow>
+
+        <!-- Acciones -->
+        <VRow class="mt-4">
+          <VCol
+            cols="12"
+            class="text-center"
+          >
+            <VBtn
+              color="primary"
+              size="large"
+              prepend-icon="tabler-calendar-event"
+              class="me-2"
+              @click="navegarA('/reservas')"
+            >
+              Reservar Clase
+            </VBtn>
+            <VBtn
+              color="primary"
+              size="large"
+              variant="outlined"
+              prepend-icon="tabler-package"
+              @click="navegarA('/mi-plan')"
+            >
+              Ver Mi Plan
+            </VBtn>
+          </VCol>
+        </VRow>
+      </VCardText>
+    </VCard>
+
+    <!-- Sin Plan Activo -->
+    <VCard
+      v-else
+      class="mb-6"
+      color="warning"
+    >
+      <VCardText>
+        <VRow align="center">
+          <VCol
+            cols="12"
+            md="8"
+          >
+            <div class="d-flex align-center">
               <VAvatar
-                size="44"
-                color="info"
-                variant="tonal"
+                size="56"
+                color="white"
+                variant="elevated"
+                class="me-4"
               >
                 <VIcon
-                  icon="tabler-mail"
-                  size="24"
+                  icon="tabler-alert-circle"
+                  size="32"
+                  color="warning"
                 />
               </VAvatar>
-              <div class="ms-3">
-                <p class="text-body-2 mb-0 text-medium-emphasis">
-                  Mensajes
-                </p>
-                <h3 class="text-h3">
-                  {{ estadisticas.mensajes.noLeidos }}
+              <div>
+                <h3 class="text-h5 mb-1 text-white">
+                  No tienes un plan activo
                 </h3>
+                <p class="text-white mb-0">
+                  Adquiere un plan para comenzar a reservar tus clases en el box
+                </p>
               </div>
             </div>
+          </VCol>
+          <VCol
+            cols="12"
+            md="4"
+            class="text-center text-md-end"
+          >
             <VBtn
-              variant="text"
-              size="small"
-              color="info"
-              @click="navegarA('/mensajes')"
+              color="white"
+              variant="elevated"
+              prepend-icon="tabler-package"
+              @click="navegarA('/mi-plan')"
             >
-              VER MENSAJES
-              <VIcon
-                end
-                icon="tabler-arrow-right"
-                size="16"
-              />
+              Ver Planes Disponibles
             </VBtn>
-          </VCardText>
-        </VCard>
-      </VCol> -->
-    </VRow>
+          </VCol>
+        </VRow>
+      </VCardText>
+    </VCard>
 
-    <!-- Secciones principales -->
+    <!-- Usuarios Recientes -->
     <VRow class="mt-6">
-      <!-- Resúmenes Recientes -->
       <VCol cols="12">
         <VCard>
           <VCardTitle class="d-flex align-center justify-space-between">
             <span class="d-flex align-center">
               <VIcon
-                icon="tabler-clipboard-list"
+                icon="tabler-users"
                 class="me-2"
                 color="primary"
               />
-              Evaluaciones Recientes
+              Nuevos Usuarios
             </span>
             <VBtn
               variant="text"
               size="small"
-              @click="navegarA('/evaluaciones')"
+              @click="navegarA('/users')"
             >
               Ver todos
             </VBtn>
@@ -276,15 +495,15 @@ const abrirCongreso = () => {
 
           <VCardText>
             <VList
-              v-if="evaluacionesRecientes.length > 0"
+              v-if="usuariosRecientes.length > 0"
               density="compact"
               class="pa-0"
             >
               <VListItem
-                v-for="(evaluacion, index) in evaluacionesRecientes"
-                :key="evaluacion.id"
-                :class="{ 'border-b': index < evaluacionesRecientes.length - 1 }"
-                @click="navegarA('/evaluaciones')"
+                v-for="(usuario, index) in usuariosRecientes"
+                :key="usuario.id"
+                :class="{ 'border-b': index < usuariosRecientes.length - 1 }"
+                @click="navegarA('/users')"
                 style="cursor: pointer;"
               >
                 <template #prepend>
@@ -293,23 +512,31 @@ const abrirCongreso = () => {
                     color="primary"
                     variant="tonal"
                   >
-                    <VIcon
-                      icon="tabler-user"
-                      size="20"
-                    />
+                    <span class="text-sm font-weight-medium">
+                      {{ usuario.name?.charAt(0) || 'U' }}
+                    </span>
                   </VAvatar>
                 </template>
 
                 <VListItemTitle class="text-body-1 font-weight-medium mb-1">
-                  {{ evaluacion.usuario.name }}
+                  {{ usuario.name }}
                 </VListItemTitle>
                 <VListItemSubtitle class="text-body-2">
-                  Peso: {{ evaluacion.peso }} kg • IMC: {{ evaluacion.imc }} • Grasa: {{ evaluacion.porcentaje_grasa }}%
+                  {{ usuario.email }}
                 </VListItemSubtitle>
 
                 <template #append>
-                  <div class="text-caption text-medium-emphasis">
-                    {{ formatearFecha(evaluacion.fecha_evaluacion) }}
+                  <div class="d-flex flex-column align-end">
+                    <VChip
+                      size="small"
+                      :color="usuario.role === 'admin' ? 'error' : 'primary'"
+                      class="mb-1"
+                    >
+                      {{ usuario.role === 'admin' ? 'Admin' : 'Usuario' }}
+                    </VChip>
+                    <div class="text-caption text-medium-emphasis">
+                      {{ formatearFecha(usuario.created_at) }}
+                    </div>
                   </div>
                 </template>
               </VListItem>
@@ -320,23 +547,23 @@ const abrirCongreso = () => {
               class="text-center py-8"
             >
               <VIcon
-                icon="tabler-clipboard-list"
+                icon="tabler-users"
                 size="48"
                 class="mb-4 text-medium-emphasis"
               />
               <p class="text-body-1 text-medium-emphasis mb-2">
-                No hay evaluaciones aún
+                No hay usuarios aún
               </p>
               <VBtn
                 color="primary"
                 variant="tonal"
-                @click="navegarA('/evaluaciones')"
+                @click="navegarA('/users')"
               >
                 <VIcon
                   start
                   icon="tabler-plus"
                 />
-                Crear Primera Evaluación
+                Crear Primer Usuario
               </VBtn>
             </div>
           </VCardText>

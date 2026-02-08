@@ -5,21 +5,26 @@ export default [
     icon: { icon: 'tabler-smart-home' },
   },
   {
+    title: 'Mi Plan',
+    to: { name: 'mi-plan' },
+    icon: { icon: 'tabler-package' },
+  },
+  {
     title: 'Usuarios',
     to: { name: 'users' },
     icon: { icon: 'tabler-users' },
     requiredRole: ['admin', 'superadmin'],
   },
   {
-    title: 'Evaluaciones',
-    to: { name: 'evaluaciones' },
-    icon: { icon: 'tabler-clipboard-check' },
+    title: 'Planes',
+    to: { name: 'planes' },
+    icon: { icon: 'tabler-credit-card' },
     requiredRole: ['admin', 'superadmin'],
   },
   {
-    title: 'Informes',
-    to: { name: 'informes' },
-    icon: { icon: 'tabler-chart-line' },
+    title: 'Validar Pagos',
+    to: { name: 'validar-pagos' },
+    icon: { icon: 'tabler-file-check' },
     requiredRole: ['admin', 'superadmin'],
   },
   {

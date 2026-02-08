@@ -66,10 +66,10 @@ const handleLogout = () => {
   >
     <VAvatar
       class="cursor-pointer"
-      color="#7C3AED"
-      style="background-color: #ede9fe;"
+      color="#DC2626"
+      style="background-color: #fee2e2;"
     >
-      <span style="color: #7C3AED; font-weight: 600;">{{ userInitials }}</span>
+      <span style="color: #DC2626; font-weight: 600;">{{ userInitials }}</span>
 
       <!-- SECTION Menu -->
       <VMenu
@@ -91,10 +91,10 @@ const handleLogout = () => {
                   color="success"
                 >
                   <VAvatar
-                    color="#7C3AED"
-                    style="background-color: #ede9fe;"
+                    color="#DC2626"
+                    style="background-color: #fee2e2;"
                   >
-                    <span style="color: #7C3AED; font-weight: 600;">{{ userInitials }}</span>
+                    <span style="color: #DC2626; font-weight: 600;">{{ userInitials }}</span>
                   </VAvatar>
                 </VBadge>
               </VListItemAction>

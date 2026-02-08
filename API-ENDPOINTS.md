@@ -1350,7 +1350,7 @@ VITE_API_BASE_URL=http://localhost:8000/api
 
 Para producción:
 ```env
-VITE_API_BASE_URL=https://api.appikigai.cl/api
+VITE_API_BASE_URL=https://api.appnutri.cl/api
 ```
 
 ---

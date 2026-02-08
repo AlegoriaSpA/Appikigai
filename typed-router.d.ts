@@ -24,9 +24,13 @@ declare module 'vue-router/auto-routes' {
     'forgot-password': RouteRecordInfo<'forgot-password', '/forgot-password', Record<never, never>, Record<never, never>>,
     'informes': RouteRecordInfo<'informes', '/informes', Record<never, never>, Record<never, never>>,
     'login': RouteRecordInfo<'login', '/login', Record<never, never>, Record<never, never>>,
+    'mi-plan': RouteRecordInfo<'mi-plan', '/mi-plan', Record<never, never>, Record<never, never>>,
+    'pagar': RouteRecordInfo<'pagar', '/pagar', Record<never, never>, Record<never, never>>,
+    'planes': RouteRecordInfo<'planes', '/planes', Record<never, never>, Record<never, never>>,
     'profile': RouteRecordInfo<'profile', '/profile', Record<never, never>, Record<never, never>>,
     'register': RouteRecordInfo<'register', '/register', Record<never, never>, Record<never, never>>,
     'reset-password': RouteRecordInfo<'reset-password', '/reset-password', Record<never, never>, Record<never, never>>,
     'users': RouteRecordInfo<'users', '/users', Record<never, never>, Record<never, never>>,
+    'validar-pagos': RouteRecordInfo<'validar-pagos', '/validar-pagos', Record<never, never>, Record<never, never>>,
   }
 }

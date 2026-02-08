@@ -4,13 +4,16 @@ import { breakpointsVuetifyV3 } from '@vueuse/core'
 import { VIcon } from 'vuetify/components/VIcon'
 
 // ❗ Logo image
-import logoImage from '@images/logo.webp'
+import logoImage from '@images/LOGO.png'
 import { AppContentLayoutNav, ContentWidth, FooterType, NavbarType } from '@layouts/enums'
 
 export const { themeConfig, layoutConfig } = defineThemeConfig({
   app: {
     title: '',
-    logo: h('img', { src: logoImage, style: 'max-height: 50px; width: auto; max-width: 100%; display: block;' }),
+    logo: h('div', { style: 'display: flex; align-items: center; gap: 12px;' }, [
+      h('img', { src: logoImage, style: 'max-height: 50px; width: auto;' }),
+      h('span', { style: 'color: #000000; font-weight: 600; font-size: 22px; white-space: nowrap;' }, 'BOX IKIGAI')
+    ]),
     contentWidth: ContentWidth.Boxed,
     contentLayoutNav: AppContentLayoutNav.Vertical,
     overlayNavFromBreakpoint: breakpointsVuetifyV3.lg - 1, // 1 for matching with vuetify breakpoint. Docs: https://next.vuetifyjs.com/en/features/display-and-platform/
@@ -30,7 +33,7 @@ export const { themeConfig, layoutConfig } = defineThemeConfig({
         },
       ],
     },
-    theme: 'dark',
+    theme: 'light',
     skin: Skins.Default,
     iconRenderer: VIcon,
   },

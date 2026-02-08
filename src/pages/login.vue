@@ -51,13 +51,18 @@ const handleLogin = async () => {
     >
       <div 
         class="position-relative w-100 me-0 d-flex align-center justify-center"
-        style="background-color: #7C3AED;"
+        style="background-color: #FFFFFF;"
       >
         <VImg
           max-width="400"
           :src="loginImage"
           class="auth-illustration"
         />
+        <div style="position: absolute; bottom: 20px; text-align: center; width: 100%;">
+          <p style="font-size: 16px; color: #6B7280; margin: 0;">
+            Powered by <a href="https://www.alegoria.cl" target="_blank" style="color: #F97316; text-decoration: none; font-weight: 600;">Alegoria</a>
+          </p>
+        </div>
       </div>
     </VCol>
 
@@ -65,6 +70,7 @@ const handleLogin = async () => {
       cols="12"
       md="4"
       class="auth-card-v2 d-flex align-center justify-center"
+      style="background-color: #F9FAFB;"
     >
       <VCard
         flat
@@ -82,13 +88,13 @@ const handleLogin = async () => {
         <VCardText>
           <h4
             class="text-h4 mb-1"
-            style="color: #FFFFFF;"
+            style="color: #DC2626;"
           >
-            Bienvenido a APP IKIGAI BOX
+            Bienvenido IKIGAI BOX
           </h4>
           <p
             class="mb-0"
-            style="color: #FFFFFF;"
+            style="color: #4B5563;"
           >
             Inicia sesión en tu cuenta para comenzar
           </p>
@@ -161,7 +167,7 @@ const handleLogin = async () => {
               </VCol>
 
               <!-- create account -->
-              <!-- <VCol
+              <VCol
                 cols="12"
                 class="text-body-1 text-center"
               >
@@ -174,7 +180,7 @@ const handleLogin = async () => {
                 >
                   Crear una cuenta
                 </RouterLink>
-              </VCol> -->
+              </VCol>
             </VRow>
           </VForm>
         </VCardText>
