@@ -175,6 +175,7 @@ const cerrarExitoDialog = () => {
                         v-model="formulario.nombre"
                         label="Nombre completo *"
                         placeholder="Ingresa tu nombre"
+                        autocomplete="off"
                         :error-messages="errores.nombre"
                         prepend-inner-icon="tabler-user"
                       />
@@ -187,6 +188,7 @@ const cerrarExitoDialog = () => {
                         label="Email *"
                         type="email"
                         placeholder="tu@email.com"
+                        autocomplete="off"
                         :error-messages="errores.email"
                         prepend-inner-icon="tabler-mail"
                       />
@@ -198,6 +200,7 @@ const cerrarExitoDialog = () => {
                         v-model="formulario.telefono"
                         label="Teléfono *"
                         placeholder="+56 9 1234 5678"
+                        autocomplete="off"
                         :error-messages="errores.telefono"
                         prepend-inner-icon="tabler-phone"
                       />

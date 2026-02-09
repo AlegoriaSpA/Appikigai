@@ -1,8 +1,12 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useClasesStore } from '@/stores/clases'
+import { useUsersStore } from '@/stores/users'
 
+const router = useRouter()
 const clasesStore = useClasesStore()
+const usersStore = useUsersStore()
 
 // Estado local
 const dialogClase = ref(false)
@@ -64,6 +68,16 @@ const duracionOpciones = [
 
 // Computed
 const calendarioSemanal = computed(() => clasesStore.obtenerCalendarioSemanal())
+
+// Obtener coaches desde usuarios con rol 'coach'
+const coachesDisponibles = computed(() => {
+  return usersStore.users
+    .filter(user => user.role === 'coach')
+    .map(user => ({
+      id: user.id,
+      nombre: user.fullName || user.username
+    }))
+})
 
 // Métodos para clases
 const abrirDialogNuevaClase = () => {
@@ -165,19 +179,7 @@ const toggleClase = (id) => {
 
 // Métodos para coaches
 const abrirDialogNuevoCoach = () => {
-  formCoach.value = { nombre: '' }
-  dialogCoach.value = true
-}
-
-const guardarCoach = () => {
-  clasesStore.crearCoach(formCoach.value)
-  dialogCoach.value = false
-}
-
-const eliminarCoach = (id) => {
-  if (confirm('¿Estás seguro de eliminar este coach?')) {
-    clasesStore.eliminarCoach(id)
-  }
+  router.push({ name: 'users' })
 }
 
 // Métodos para excepciones
@@ -208,14 +210,19 @@ const formatearDias = (dias) => {
   return dias.map(dia => dia.charAt(0).toUpperCase() + dia.slice(1)).join(', ')
 }
 
+// Cargar usuarios al montar
+onMounted(() => {
+  usersStore.fetchUsers()
+})
+
 const getDiaColor = (dia) => {
   const colores = {
     'lunes': 'primary',
-    'martes': 'secondary',
+    'martes': 'info',
     'miércoles': 'success',
-    'jueves': 'info',
-    'viernes': 'warning',
-    'sábado': 'error',
+    'jueves': 'warning',
+    'viernes': 'error',
+    'sábado': 'secondary',
     'domingo': 'purple'
   }
   return colores[dia] || 'default'
@@ -228,54 +235,51 @@ const getDiaColor = (dia) => {
     <VCol cols="12">
       <VCard>
         <VCardText class="pa-6">
-          <div class="d-flex justify-space-between align-center flex-wrap gap-4 mb-4">
-            <div>
-              <h2 class="text-h4 mb-1">
-                Administrar Clases
-              </h2>
-              <p class="text-body-1 text-medium-emphasis mb-0">
-                Configura las clases, horarios y coaches del box
-              </p>
-            </div>
-            <div class="d-flex align-center gap-3 flex-wrap">
-              <!-- Toggle de vista -->
-              <VBtnToggle
-                v-model="vistaActual"
-                mandatory
-                variant="outlined"
-                divided
-                color="primary"
-              >
-                <VBtn value="lista" prepend-icon="tabler-list">
-                  Lista
-                </VBtn>
-                <VBtn value="calendario" prepend-icon="tabler-calendar-week">
-                  Calendario
-                </VBtn>
-              </VBtnToggle>
+          <div class="mb-6">
+            <h2 class="text-h4 mb-1">
+              Administrar Clases
+            </h2>
+            <p class="text-body-1 text-medium-emphasis mb-0">
+              Configura las clases, horarios y coaches del box
+            </p>
+          </div>
 
-              <!-- Divider vertical -->
-              <VDivider vertical inset class="mx-2" style="height: 40px;" />
+          <!-- Toggle de vista -->
+          <div class="mb-4">
+            <VBtnToggle
+              v-model="vistaActual"
+              mandatory
+              variant="outlined"
+              color="primary"
+              class="d-inline-flex"
+              style="gap: 8px;"
+            >
+              <VBtn value="lista" icon size="large">
+                <VIcon icon="tabler-list" />
+              </VBtn>
+              <VBtn value="calendario" icon size="large">
+                <VIcon icon="tabler-calendar-week" />
+              </VBtn>
+            </VBtnToggle>
+          </div>
 
-              <!-- Botones de acción -->
-              <VBtn
-                color="primary"
-                prepend-icon="tabler-plus"
-                size="large"
-                @click="abrirDialogNuevaClase"
-              >
-                Nueva Clase
-              </VBtn>
-              <VBtn
-                color="secondary"
-                prepend-icon="tabler-user-plus"
-                variant="tonal"
-                size="large"
-                @click="abrirDialogNuevoCoach"
-              >
-                Nuevo Coach
-              </VBtn>
-            </div>
+          <!-- Botones de acción -->
+          <div class="d-flex gap-2 flex-wrap">
+            <VBtn
+              color="primary"
+              prepend-icon="tabler-plus"
+              @click="abrirDialogNuevaClase"
+            >
+              Nueva Clase
+            </VBtn>
+            <VBtn
+              color="error"
+              prepend-icon="tabler-user-plus"
+              variant="tonal"
+              @click="abrirDialogNuevoCoach"
+            >
+              Nuevo Coach
+            </VBtn>
           </div>
         </VCardText>
       </VCard>
@@ -457,48 +461,30 @@ const getDiaColor = (dia) => {
       <VCard>
         <VCardText class="pa-6">
           <h3 class="text-h5 mb-4">
-            Coaches
+            Coaches Disponibles
           </h3>
 
-          <VRow>
-            <VCol
-              v-for="coach in clasesStore.coaches"
+          <VList>
+            <VListItem
+              v-for="coach in coachesDisponibles"
               :key="coach.id"
-              cols="12"
-              sm="6"
-              md="4"
-              lg="3"
             >
-              <VCard border>
-                <VCardText class="d-flex justify-space-between align-center">
-                  <div class="d-flex align-center gap-2">
-                    <VAvatar color="primary" size="40">
-                      <VIcon icon="tabler-user" />
-                    </VAvatar>
-                    <div>
-                      <div class="text-body-1 font-weight-medium">
-                        {{ coach.nombre }}
-                      </div>
-                      <VChip
-                        :color="coach.activo ? 'success' : 'error'"
-                        size="x-small"
-                        variant="tonal"
-                      >
-                        {{ coach.activo ? 'Activo' : 'Inactivo' }}
-                      </VChip>
-                    </div>
-                  </div>
-                  <VBtn
-                    icon="tabler-trash"
-                    size="small"
-                    variant="text"
-                    color="error"
-                    @click="eliminarCoach(coach.id)"
-                  />
-                </VCardText>
-              </VCard>
-            </VCol>
-          </VRow>
+              <template #prepend>
+                <VAvatar color="primary" size="40">
+                  <VIcon icon="tabler-user" />
+                </VAvatar>
+              </template>
+
+              <VListItemTitle>{{ coach.nombre }}</VListItemTitle>
+              <VListItemSubtitle>Coach</VListItemSubtitle>
+            </VListItem>
+
+            <VListItem v-if="coachesDisponibles.length === 0">
+              <VListItemTitle class="text-center text-medium-emphasis">
+                No hay coaches registrados. Crea usuarios con rol "Coach" para que aparezcan aquí.
+              </VListItemTitle>
+            </VListItem>
+          </VList>
         </VCardText>
       </VCard>
     </VCol>
@@ -561,7 +547,7 @@ const getDiaColor = (dia) => {
               <VCol cols="12" sm="6">
                 <VSelect
                   v-model="formClase.coachPorDefecto"
-                  :items="clasesStore.coachesActivos.map(c => c.nombre)"
+                  :items="coachesDisponibles.map(c => c.nombre)"
                   label="Coach por defecto"
                   :error-messages="errores.coachPorDefecto"
                   required
@@ -678,7 +664,7 @@ const getDiaColor = (dia) => {
               <VCol v-if="!formExcepcion.cancelada" cols="12">
                 <VSelect
                   v-model="formExcepcion.coachReemplazo"
-                  :items="clasesStore.coachesActivos.map(c => c.nombre)"
+                  :items="coachesDisponibles.map(c => c.nombre)"
                   label="Coach de reemplazo (opcional)"
                   clearable
                 />

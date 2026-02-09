@@ -47,8 +47,9 @@ const headers = [
 const roles = [
   { title: 'Todos', value: '' },
   { title: 'Super Admin', value: 'superadmin' },
-  { title: 'Admin', value: 'admin' },
-  { title: 'Usuario', value: 'user' },
+  { title: 'Coach', value: 'coach' },
+  { title: 'Cliente', value: 'cliente' },
+  { title: 'Prueba', value: 'prueba' },
 ]
 
 // Roles disponibles para crear según el rol del usuario actual
@@ -56,16 +57,17 @@ const rolesDisponibles = computed(() => {
   if (authStore.userRole === 'superadmin') {
     return [
       { title: 'Super Admin', value: 'superadmin' },
-      { title: 'Admin', value: 'admin' },
-      { title: 'Usuario', value: 'user' },
+      { title: 'Coach', value: 'coach' },
+      { title: 'Cliente', value: 'cliente' },
+      { title: 'Prueba', value: 'prueba' },
     ]
-  } else if (authStore.userRole === 'admin') {
+  } else if (authStore.userRole === 'coach') {
     return [
-      { title: 'Admin', value: 'admin' },
-      { title: 'Usuario', value: 'user' },
+      { title: 'Cliente', value: 'cliente' },
+      { title: 'Prueba', value: 'prueba' },
     ]
   }
-  return [{ title: 'Usuario', value: 'user' }]
+  return [{ title: 'Cliente', value: 'cliente' }]
 })
 
 // Form data
@@ -74,7 +76,7 @@ const formData = ref({
   apellidos: '',
   email: '',
   password: '',
-  role: 'user',
+  role: 'cliente',
   numeroDocumento: '',
   telefono: '',
   profesion: '',
@@ -304,8 +306,9 @@ const confirmDelete = async () => {
 const getRoleBadgeColor = role => {
   const colors = {
     superadmin: 'error',
-    admin: 'warning',
-    user: 'info',
+    coach: 'warning',
+    cliente: 'info',
+    prueba: 'success',
   }
   
   return colors[role] || 'secondary'
@@ -314,8 +317,9 @@ const getRoleBadgeColor = role => {
 const getRoleLabel = role => {
   const labels = {
     superadmin: 'Super Admin',
-    admin: 'Admin',
-    user: 'Usuario',
+    coach: 'Coach',
+    cliente: 'Cliente',
+    prueba: 'Prueba',
   }
   
   // Si el rol no está en el mapa, mostrarlo capitalizado

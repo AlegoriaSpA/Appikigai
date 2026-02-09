@@ -143,7 +143,7 @@ const handleSubmit = async () => {
                   :label="t('auth.email')"
                   :placeholder="t('auth.emailPlaceholder')"
                   type="email"
-                  autocomplete="email"
+                  autocomplete="off"
                   :disabled="isLoading"
                 />
               </VCol>

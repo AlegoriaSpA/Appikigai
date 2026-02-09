@@ -173,11 +173,10 @@ php artisan serve
 ## 🔐 Roles Implementados
 
 Los siguientes roles están configurados en el sistema:
-- `superadmin` - Acceso total
-- `admin` - Administrador
-- `user` - Usuario regular (paciente)
-- `secretaria` - Secretaria
-- `editor` - Editor
+- `superadmin` - Acceso total, puede crear usuarios de cualquier rol
+- `coach` - Entrenador, puede crear clientes y usuarios de prueba
+- `cliente` - Usuario regular (paciente/cliente)
+- `prueba` - Usuario de prueba
 
 ## 📝 Notas Importantes
 
@@ -1231,7 +1230,7 @@ if (diferencia < 90) {
 ```javascript
 {
   id: Number,
-  nombre: String,              // Nombre completo del interesado
+  nombre: String,              // Nombre complet del interesado
   email: String,               // Email del interesado
   telefono: String,            // Teléfono de contacto
   claseId: Number,             // ID de la clase solicitada
@@ -2054,6 +2053,169 @@ body: "Te esperamos el [fecha] a las [hora] para tu clase de [nombre]..."
 
 ---
 
-**Versión:** 2.1
-**Última actualización:** 8 de Febrero, 2026
+**Versión:** 2.2
+**Última actualización:** 9 de Febrero, 2026
 **Desarrollado para:** APP IKIGAI BOX
+
+---
+
+## 🆕 CAMBIOS RECIENTES (Febrero 2026)
+
+### Sistema de Kiosko Completo
+
+#### Store de Kiosko (`src/stores/kiosko.js`)
+- ✅ Gestión completa de productos e inventario
+- ✅ Registro de ventas con seguimiento de stock
+- ✅ Función `registrarVenta()`: auto-marca pagado para "Efectivo"
+- ✅ Función `actualizarVenta()`: editar ventas con ajuste de stock
+- ✅ Función `eliminarVenta()`: eliminar ventas y restaurar stock
+- ✅ Persistencia en LocalStorage
+- ✅ Validaciones de stock disponible
+
+#### Página de Inventario (`src/pages/kiosko-inventario.vue`)
+- ✅ Gestión de productos: agregar, editar stock
+- ✅ Historial completo de compras con filtros:
+  - Filtro por rango de fechas
+  - Búsqueda por nombre de usuario
+- ✅ Tarjetas de estadísticas:
+  - Total de ventas realizadas
+  - Monto total recaudado
+  - Total de deuda pendiente (ventas no pagadas)
+- ✅ Tabla de compras con columnas: Fecha, Usuario, Producto, Cantidad, Método Pago, Total, Pagado
+
+#### Página de Ventas (`src/pages/kiosko-ventas.vue`)
+- ✅ Chips de búsqueda rápida: Monster, Gatorade, Powerade
+- ✅ Búsqueda de productos con stock disponible
+- ✅ Selector de cliente (usuarios con rol 'cliente')
+- ✅ Método de pago con botones chip (Efectivo, Transferencia, Otro)
+- ✅ Diseño mejorado de "Detalles de la Venta" con dividers y totales grandes
+- ✅ Tabla de últimas ventas con botones de editar y eliminar
+- ✅ Dialog de edición: cambiar cantidad y método de pago
+- ✅ Validación de stock al editar
+- ✅ Auto-marcado de pagado cuando método es "Efectivo"
+
+#### Página de Mis Compras (`src/pages/kiosko-compras.vue`)
+- ✅ Filtros por usuario, fecha y estado de pago
+- ✅ Estadísticas de compras: Total Compras, Cantidad de Compras
+- ✅ **Total Deuda**: cálculo de ventas no pagadas
+- ✅ Tabla con doble footer: Total General y Total Deuda (en rojo)
+- ✅ Checkbox manual para marcar ventas como pagadas
+
+### Sistema de Usuarios y Roles
+
+#### Roles Actualizados (`src/pages/users.vue`)
+- ✅ Nuevos roles: `superadmin`, `coach`, `cliente`, `prueba`
+- ✅ Eliminados roles antiguos: `admin`, `user`
+- ✅ Jerarquía de permisos:
+  - `superadmin`: puede crear todos los roles
+  - `coach`: puede crear `cliente` y `prueba`
+- ✅ Colores de badges:
+  - superadmin: rojo (error)
+  - coach: amarillo (warning)
+  - cliente: azul (info)
+  - prueba: verde (success)
+- ✅ Rol por defecto: `cliente`
+
+### Administración de Clases
+
+#### Integración de Coaches (`src/pages/administrar-clases.vue`)
+- ✅ Coaches obtenidos de usuarios con rol `coach`
+- ✅ Eliminada gestión separada de coaches
+- ✅ Computed `coachesDisponibles`: filtra usuarios por rol 'coach'
+- ✅ Lista simple de coaches sin botones de edición/eliminación
+- ✅ Botón "Nuevo Coach" redirige a página de usuarios
+- ✅ Colores de días actualizados:
+  - Lunes: primary (azul)
+  - Martes: info (cyan) - antes era secondary
+  - Miércoles: success (verde)
+  - Jueves: warning (amarillo)
+  - Viernes: error (rojo)
+  - Sábado: secondary (gris)
+  - Domingo: purple (morado)
+
+#### Mejoras de UI
+- ✅ Layout de botones simplificado: toggle de vista con solo iconos (calendario/lista)
+- ✅ Botones más grandes con mejor espaciado
+- ✅ Diseño responsive mejorado
+
+### Mejoras Generales de UX
+
+#### Autocomplete Deshabilitado
+- ✅ `autocomplete="off"` en todos los formularios
+- ✅ Aplicado en: login, forgot-password, clase-prueba, users, kiosko
+- ✅ Previene popups de autocompletado en Mac
+
+#### Optimizaciones de Mobile
+- ✅ Botones chip para selección de método de pago
+- ✅ Mejor espaciado en layouts móviles
+- ✅ Interacciones táctiles optimizadas
+
+#### Limpieza de Código
+- ✅ Eliminada función duplicada `formatearPrecio`
+- ✅ Removidas alertas info al seleccionar cliente/producto
+- ✅ Código modularizado y organizado
+
+---
+
+## 📊 PRÓXIMAS INTEGRACIONES BACKEND
+
+### Endpoints Pendientes para Kiosko
+
+#### Productos
+```
+GET    /api/kiosko/productos          - Listar productos
+POST   /api/kiosko/productos          - Crear producto
+PUT    /api/kiosko/productos/{id}     - Actualizar producto
+DELETE /api/kiosko/productos/{id}     - Eliminar producto
+PATCH  /api/kiosko/productos/{id}/stock - Actualizar stock
+```
+
+#### Ventas
+```
+GET    /api/kiosko/ventas             - Listar ventas con filtros
+POST   /api/kiosko/ventas             - Registrar venta
+PUT    /api/kiosko/ventas/{id}        - Actualizar venta
+DELETE /api/kiosko/ventas/{id}        - Eliminar venta
+PATCH  /api/kiosko/ventas/{id}/pago   - Marcar como pagado/no pagado
+GET    /api/kiosko/ventas/usuario/{usuario_id} - Ventas de un usuario
+GET    /api/kiosko/estadisticas       - Estadísticas de ventas
+```
+
+### Cambios en API de Usuarios
+- ✅ Actualizar validación de roles: `superadmin`, `coach`, `cliente`, `prueba`
+- ✅ Filtro por rol en endpoint de listado
+- ✅ Endpoint para obtener solo coaches: `GET /api/users?role=coach`
+
+### Base de Datos para Kiosko
+
+#### Tabla `productos_kiosko`
+```sql
+CREATE TABLE productos_kiosko (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(255) NOT NULL,
+    precio DECIMAL(10,2) NOT NULL,
+    stock INT DEFAULT 0,
+    activo BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+```
+
+#### Tabla `ventas_kiosko`
+```sql
+CREATE TABLE ventas_kiosko (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    usuario_id INT NOT NULL,
+    producto_id INT NOT NULL,
+    cantidad INT NOT NULL,
+    precio_unitario DECIMAL(10,2) NOT NULL,
+    total DECIMAL(10,2) NOT NULL,
+    metodo_pago ENUM('Efectivo', 'Transferencia', 'Otro') NOT NULL,
+    pagado BOOLEAN DEFAULT FALSE,
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (producto_id) REFERENCES productos_kiosko(id) ON DELETE RESTRICT
+);
+```

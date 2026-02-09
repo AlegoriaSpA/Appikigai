@@ -110,6 +110,7 @@ const handleLogin = async () => {
                   label="Email"
                   type="email"
                   placeholder="usuario@ejemplo.com"
+                  autocomplete="off"
                   :disabled="authStore.isLoading"
                 />
               </VCol>

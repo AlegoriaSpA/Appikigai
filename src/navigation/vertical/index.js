@@ -22,7 +22,7 @@ export default [
   {
     title: 'Clase de Prueba',
     to: { name: 'clase-prueba' },
-    icon: { icon: 'tabler-discount-check' },
+    icon: { icon: 'tabler-ticket' },
   },
   {
     title: 'Check In',
@@ -58,8 +58,6 @@ export default [
     title: 'Pagos',
     icon: { icon: 'tabler-cash' },
     requiredRole: ['admin', 'superadmin'],
-    badgeClass: 'bg-error',
-    class: 'nav-item-pagos',
     children: [
       {
         title: 'Validar Pagos',
@@ -70,6 +68,28 @@ export default [
         title: 'Todos los Pagos',
         to: { name: 'todos-los-pagos' },
         icon: { icon: 'tabler-receipt' },
+      },
+    ],
+  },
+  {
+    title: 'Kiosko',
+    icon: { icon: 'tabler-shopping-bag' },
+    requiredRole: ['admin', 'superadmin'],
+    children: [
+      {
+        title: 'Inventario',
+        to: { name: 'kiosko-inventario' },
+        icon: { icon: 'tabler-package' },
+      },
+      {
+        title: 'Ventas',
+        to: { name: 'kiosko-ventas' },
+        icon: { icon: 'tabler-shopping-cart' },
+      },
+      {
+        title: 'Mis Compras',
+        to: { name: 'kiosko-compras' },
+        icon: { icon: 'tabler-receipt-2' },
       },
     ],
   },

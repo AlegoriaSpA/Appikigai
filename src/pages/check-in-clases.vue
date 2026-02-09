@@ -419,12 +419,12 @@ const formatearFecha = (fecha) => {
                         size="48"
                       >
                         <span class="text-h6 text-white">
-                          {{ reserva.usuarioNombre.charAt(0).toUpperCase() }}
+                          {{ reserva.usuarioNombre ? reserva.usuarioNombre.charAt(0).toUpperCase() : '?' }}
                         </span>
                       </VAvatar>
                       <div>
                         <div class="text-h6 mb-1">
-                          {{ reserva.usuarioNombre }}
+                          {{ reserva.usuarioNombre || 'Usuario desconocido' }}
                         </div>
                         <div class="d-flex align-center gap-2">
                           <VChip
